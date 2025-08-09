@@ -1,5 +1,9 @@
 # waitgroup
 JS version like wait group in Golang
 
-Example:
-checkout folder ./test
+Run test example:
+```
+node ./test/test.js
+
+```
+
