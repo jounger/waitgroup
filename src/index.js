@@ -10,7 +10,7 @@ export default function waitgroup() {
     })()
     iter.next(0)
     return {
-        add: (delta) => iter.next(delta > 0 ? delta : 1),
+        add: (delta = 1) => Number.isInteger(delta) && delta > 0 && iter.next(delta),
         done: () => iter.next(-1),
         wait: async (loop = null) => new Promise(resolve => loop = setInterval(() => iter.return().done && (clearInterval(loop) || resolve(true), 0)))
     }
