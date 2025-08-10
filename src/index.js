@@ -1,17 +1,14 @@
-export default function waitgroup() {
-    const iter = (function*() {
-        yield* {
-            [Symbol.iterator]: (state = null) =>
-            ((state = { i: 0, done: false }) && {
-                next: (step = 0) => (step !== 0 && (step > 0 ? state.i += step : state.done = (state.i -= 1) === 0) || true) && state,
-                return: () => state
-            })
-        }
-    })()
-    iter.next(0)
-    return {
-        add: (delta = 1) => Number.isInteger(delta) && delta > 0 && iter.next(delta),
-        done: () => iter.next(-1),
-        wait: async (loop = null) => new Promise(resolve => loop = setInterval(() => iter.return().done && (clearInterval(loop) || resolve(true), 0)))
+const waitgroup = async () => Promise.resolve((function*() {
+    yield* {
+        [Symbol.iterator]: (i = 0, done = false) => ({
+            next: (step) => (step && (done = (i += step) === 0) || true) && { i, done },
+            return: () => ({ i, done })
+        })
     }
-}
+})()).then((iterator) => iterator.next() && {
+    add: (delta = 1) => Number.isInteger(delta) && delta > 0 && iterator.next(delta),
+    done: () => iterator.next(-1),
+    wait: async () => new Promise(resolve => setInterval(function() { iterator.return().done && resolve(this) }, 0)).then((interval) => clearInterval(interval))
+})
+
+export { waitgroup as default }

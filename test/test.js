@@ -6,7 +6,7 @@ async function sleep(ms) {
 }
 
 async function main() {
-    const wg = waitgroup();
+    const wg = await waitgroup();
     const urls = [
         "https://developer.mozilla.org/",
         "https://www.golang.org/",
